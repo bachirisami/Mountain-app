@@ -1,0 +1,120 @@
+<div class="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 p-6 relative">
+
+  <!-- Mountain Card -->
+  <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md text-center transition-transform hover:-translate-y-1 z-10 relative">
+
+    <!-- Error message -->
+    @if(errorMessage() != null) {
+      <p class="text-red-600 font-semibold mb-6 animate-pulse">{{ errorMessage() }}</p>
+    }
+
+    <!-- Mountain Details -->
+    @if(mountain() != null) {
+      <h2 class="text-3xl font-bold mb-4 text-gray-800">{{ mountain()?.name }}</h2>
+
+      <p class="text-gray-700 mb-2 text-lg">
+        <strong>Height:</strong> {{ mountain()?.height }} m
+      </p>
+      <p class="text-gray-700 mb-6 text-lg">
+        <strong>Location:</strong> {{ mountain()?.location }}
+      </p>
+
+      <div class="flex justify-center gap-4 mb-6">
+        <a
+          routerLink="/"
+          class="inline-block bg-blue-100 text-blue-700 px-4 py-2 rounded-lg font-medium hover:bg-blue-200 transition"
+        >
+          ← Dashboard
+        </a>
+
+        @if(isLoggedIn()) {
+          <button
+            (click)="deleteMountain(mountain()!.id)"
+            class="bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition shadow-sm"
+          >
+            Delete
+          </button>
+
+          <button
+            (click)="openUpdateModal()"
+            class="bg-yellow-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-yellow-600 transition shadow-sm"
+          >
+            Update
+          </button>
+        }
+      </div>
+    }
+
+  </div>
+
+  <!-- Update Modal Overlay -->
+  @if(showUpdateModal()) {
+    <div class="fixed inset-0 flex items-center justify-center z-20">
+      <div class="bg-white p-6 rounded-3xl shadow-2xl w-full max-w-md text-center relative animate-fadeIn">
+
+        <h3 class="text-2xl font-semibold mb-5 text-gray-800">Update Mountain</h3>
+
+        <form (ngSubmit)="updateMountain()" class="flex flex-col gap-4">
+
+          <input
+            type="text"
+            [ngModel]="nameField()"
+            (ngModelChange)="nameField.set($event)"
+            name="name"
+            placeholder="Name"
+            class="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          />
+
+          <input
+            type="number"
+            [ngModel]="heightField()"
+            (ngModelChange)="heightField.set($event)"
+            name="height"
+            placeholder="Height (m)"
+            class="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          />
+
+          <input
+            type="text"
+            [ngModel]="locationField()"
+            (ngModelChange)="locationField.set($event)"
+            name="location"
+            placeholder="Location"
+            class="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          />
+
+          <div class="flex justify-between mt-4">
+            <button
+              type="submit"
+              class="bg-green-600 text-white py-2 px-5 rounded-lg font-medium hover:bg-green-700 transition shadow-md"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              (click)="closeUpdateModal()"
+              class="bg-gray-400 text-white py-2 px-5 rounded-lg font-medium hover:bg-gray-500 transition shadow-md"
+            >
+              Cancel
+            </button>
+          </div>
+
+        </form>
+
+        <!-- Close button top-right -->
+        <button
+          (click)="closeUpdateModal()"
+          class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 font-bold text-lg"
+        >
+          &times;
+        </button>
+      </div>
+    </div>
+  }
+</div>
+
+<style>
+  ::placeholder {
+    opacity: 0.5;
+  }
+</style>

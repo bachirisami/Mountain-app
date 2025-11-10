@@ -5,87 +5,56 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Mountain;
 use Illuminate\Validation\ValidationException;
+use App\Services\MountainService;
+use App\Http\Requests\CreateMountainRequest;
+use App\Http\Requests\UpdateMountainRequest;
 
 class MountainController extends Controller
 {
-    public function getAllMountains(){
-        $mountains = Mountain::all();
+    protected $mountainService;
+
+    public function __construct(MountainService $mountainService)
+    {
+        $this->mountainService = $mountainService;
+    }
+
+    public function getAllMountains()
+    {
+        $mountains = $this->mountainService->getAll();
         return response()->json($mountains);
     }
 
-    public function getMountainById($id){
-        $mountain = Mountain::find($id);
-        if (!$mountain) {
-            return response()->json([
-                'message' => 'Mountain not found'
-            ], 404);
-        }
+    public function getMountainById($id)
+    {
+        $mountain = $this->mountainService->getById($id);
         return response()->json($mountain);
     }
 
-    public function createMountain(Request $request){
-        try {
-            $fields = $request->validate([
-                'name' => ['required', 'string', 'max:255'],
-                'height' => ['required', 'integer', 'min:1'],
-                'location' => ['required', 'string', 'max:255']
-            ]);
-
-            $mountain = Mountain::create([
-                'name' => $fields['name'],
-                'height' => $fields['height'],
-                'location' => $fields['location']
-            ]);
-
-            return response()->json([
-                'message' => 'Mountain created successfully!',
-                'data' => $mountain
-            ], 201);
-
-        } catch (ValidationException $e) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-        }
-    }
-
-    public function deleteMountain($id){
-        $mountain = Mountain::find($id);
-
-        if (!$mountain) {
-            return response()->json([
-                'message' => 'Mountain not found'
-            ], 404);
-        }
-
-        $mountain->delete();
+    public function createMountain(CreateMountainRequest $request)
+    {
+        $mountain = $this->mountainService->create($request->validated());
 
         return response()->json([
-            'message' => 'Mountain deleted successfully!'
-        ], 200);
+            'message' => 'Mountain created successfully!',
+            'data' => $mountain
+        ], 201);
     }
 
-    public function updateMountain(Request $request, $id){
-        $mountain = Mountain::find($id);
+    public function deleteMountain($id)
+    {
+        $deleted = $this->mountainService->delete($id);
 
-        if (!$mountain) {
-            return response()->json([
-                'message' => 'Mountain not found'
-            ], 404);
-        }
+        return response()->json(['message' => 'Mountain deleted successfully!'], 200);
+    }
 
-        $fields = $request->validate([
-            'name' => ['sometimes', 'string', 'max:255'],
-            'height' => ['sometimes', 'integer', 'min:1'],
-            'location' => ['sometimes', 'string', 'max:255']
-        ]);
-
-        $mountain->update($fields);
+    public function updateMountain(UpdateMountainRequest $request, $id)
+    {
+        $mountain = $this->mountainService->update($id, $request->validated());
 
         return response()->json([
             'message' => 'Mountain updated successfully!',
             'data' => $mountain
-        ], 200);
+        ]);
     }
 }
+// api_call?page=2&limit=10&query=Alpen
