@@ -1,0 +1,100 @@
+<div class="fixed inset-0 flex items-center justify-center z-20 bg-black/30 backdrop-blur-sm">
+  <div class="bg-white p-6 rounded-3xl shadow-2xl w-full max-w-md text-center relative animate-fadeIn">
+
+    <h3 class="text-2xl font-semibold mb-5 text-gray-800">Update Mountain</h3>
+
+    <form (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+
+      <input
+        type="text"
+        [ngModel]="nameField()"
+        (ngModelChange)="nameField.set($event)"
+        name="name"
+        placeholder="Name"
+        class="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+      />
+
+      <input
+        type="number"
+        [ngModel]="heightField()"
+        (ngModelChange)="heightField.set($event)"
+        name="height"
+        placeholder="Height (m)"
+        class="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+      />
+
+      <input
+        type="text"
+        [ngModel]="locationField()"
+        (ngModelChange)="locationField.set($event)"
+        name="location"
+        placeholder="Location"
+        class="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+      />
+
+      <input
+        type="text"
+        [ngModel]="imageUrlField()"
+        (ngModelChange)="imageUrlField.set($event)"
+        name="ImageUrl"
+        placeholder="Image URL"
+        class="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+      />
+
+      <input
+        type="number"
+        [ngModel]="latitudeField()"
+        (ngModelChange)="latitudeField.set($event)"
+        name="Latitude"
+        placeholder="Latitude"
+        class="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+      />
+
+      <input
+        type="number"
+        [ngModel]="longitudeField()"
+        (ngModelChange)="longitudeField.set($event)"
+        name="Longitude"
+        placeholder="Longitude"
+        class="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+      />
+
+      <div class="flex justify-between mt-4">
+        <button
+          type="button"
+          (click)="onClose()"
+          class="bg-gray-400 text-white py-2 px-5 rounded-lg font-medium hover:bg-gray-500 transition shadow-md"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="bg-green-600 text-white py-2 px-5 rounded-lg font-medium hover:bg-green-700 transition shadow-md"
+        >
+          Save
+        </button>
+      </div>
+
+    </form>
+
+    <button
+      (click)="onClose()"
+      class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 font-bold text-lg"
+    >
+      &times;
+    </button>
+  </div>
+</div>
+
+<style>
+  /* Remove spinner arrows from number inputs */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+</style>

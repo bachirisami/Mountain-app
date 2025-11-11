@@ -1,9 +1,8 @@
-export interface Mountain {
-  id: number;
+export interface CreateMountain {
   name: string;
   height: number;
   location: string;
-  image_url: string;
   latitude: number;
   longitude: number;
+  image_url: string;
 }

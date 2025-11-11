@@ -30,6 +30,8 @@ export class LoginPage {
       localStorage.setItem('token', response.data.token);
     })
 
-    await this.router.navigate(['/']);
+    const returnUrl = localStorage.getItem('returnUrl') || '/';
+    localStorage.removeItem('returnUrl');
+    await this.router.navigate([returnUrl]);
   }
 }

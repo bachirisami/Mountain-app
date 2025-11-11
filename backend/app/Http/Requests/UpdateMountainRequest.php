@@ -11,7 +11,7 @@ class UpdateMountainRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,6 +25,9 @@ class UpdateMountainRequest extends FormRequest
             'name' => ['sometimes', 'string', 'max:255'],
             'height' => ['sometimes', 'integer', 'min:1'],
             'location' => ['sometimes', 'string', 'max:255'],
+            'latitude' => ['sometimes', 'numeric'],
+            'longitude' => ['sometimes', 'numeric'],
+            'image_url' => ['sometimes', 'string', 'max:255'],
         ];
     }
 }

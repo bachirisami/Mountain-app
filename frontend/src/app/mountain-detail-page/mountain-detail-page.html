@@ -1,116 +1,89 @@
-<div class="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 p-6 relative">
+<app-header></app-header>
 
-  <!-- Mountain Card -->
-  <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-md text-center transition-transform hover:-translate-y-1 z-10 relative">
+<div class="flex items-center justify-center min-h-[calc(100vh-4rem)] bg-gradient-to-b from-blue-50 to-blue-100 p-6 relative">
 
-    <!-- Error message -->
+  <div class="bg-white p-8 rounded-3xl shadow-xl w-full max-w-6xl transition-transform hover:-translate-y-1 relative">
+
     @if(errorMessage() != null) {
       <p class="text-red-600 font-semibold mb-6 animate-pulse">{{ errorMessage() }}</p>
-    }
+    } @else {
+      <h2 class="text-3xl font-bold text-gray-800 text-center mb-8">{{ mountain()?.name }}</h2>
 
-    <!-- Mountain Details -->
-    @if(mountain() != null) {
-      <h2 class="text-3xl font-bold mb-4 text-gray-800">{{ mountain()?.name }}</h2>
+      <div class="flex flex-col lg:flex-row gap-6">
 
-      <p class="text-gray-700 mb-2 text-lg">
-        <strong>Height:</strong> {{ mountain()?.height }} m
-      </p>
-      <p class="text-gray-700 mb-6 text-lg">
-        <strong>Location:</strong> {{ mountain()?.location }}
-      </p>
+        <!-- Left Side: Image + Info -->
+        <div class="flex-1 flex flex-col items-center lg:items-start gap-6">
+          <div class="w-full h-96 rounded-xl overflow-hidden shadow-inner">
+            <img
+              [src]="mountain()?.image_url || 'https://via.placeholder.com/400x400?text=No+Image'"
+              alt="{{ mountain()?.name }}"
+              class="w-full h-full object-cover rounded-xl"
+            />
+          </div>
 
-      <div class="flex justify-center gap-4 mb-6">
-        <a
-          routerLink="/"
-          class="inline-block bg-blue-100 text-blue-700 px-4 py-2 rounded-lg font-medium hover:bg-blue-200 transition"
-        >
-          ← Dashboard
-        </a>
+          <p class="text-gray-700 text-lg">
+            <strong>Height:</strong> {{ mountain()?.height }} m
+          </p>
+          <p class="text-gray-700 text-lg">
+            <strong>Location:</strong> {{ mountain()?.location }}
+          </p>
 
-        @if(isLoggedIn()) {
-          <button
-            (click)="deleteMountain(mountain()!.id)"
-            class="bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition shadow-sm"
-          >
-            Delete
-          </button>
+          @if(isLoggedIn()) {
+            <div class="flex gap-4 mt-4">
+              <button
+                (click)="openDeleteModal()"
+                class="bg-red-600 text-white px-5 py-3 rounded-lg font-medium hover:bg-red-700 transition shadow-sm"
+              >
+                Delete
+              </button>
 
-          <button
-            (click)="openUpdateModal()"
-            class="bg-yellow-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-yellow-600 transition shadow-sm"
-          >
-            Update
-          </button>
-        }
+              <button
+                (click)="openUpdateModal()"
+                class="bg-yellow-500 text-white px-5 py-3 rounded-lg font-medium hover:bg-yellow-600 transition shadow-sm"
+              >
+                Update
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- Right Side: Map -->
+        <div class="flex-1 h-96 rounded-xl overflow-hidden shadow-inner">
+          <img
+            [src]="mountain()
+              ? 'https://static-maps.yandex.ru/1.x/?ll=' + mountain()?.longitude + ',' + mountain()?.latitude + '&size=650,400&z=8&l=map&pt=' + mountain()?.longitude + ',' + mountain()?.latitude + ',pm2rdm'
+              : 'https://via.placeholder.com/650x400?text=No+Map' "
+            alt="Map of {{ mountain()?.name }}"
+            class="w-full h-full object-cover rounded-xl"
+          />
+        </div>
+
       </div>
     }
 
   </div>
 
-  <!-- Update Modal Overlay -->
   @if(showUpdateModal()) {
-    <div class="fixed inset-0 flex items-center justify-center z-20">
-      <div class="bg-white p-6 rounded-3xl shadow-2xl w-full max-w-md text-center relative animate-fadeIn">
-
-        <h3 class="text-2xl font-semibold mb-5 text-gray-800">Update Mountain</h3>
-
-        <form (ngSubmit)="updateMountain()" class="flex flex-col gap-4">
-
-          <input
-            type="text"
-            [ngModel]="nameField()"
-            (ngModelChange)="nameField.set($event)"
-            name="name"
-            placeholder="Name"
-            class="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-          />
-
-          <input
-            type="number"
-            [ngModel]="heightField()"
-            (ngModelChange)="heightField.set($event)"
-            name="height"
-            placeholder="Height (m)"
-            class="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-          />
-
-          <input
-            type="text"
-            [ngModel]="locationField()"
-            (ngModelChange)="locationField.set($event)"
-            name="location"
-            placeholder="Location"
-            class="border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-          />
-
-          <div class="flex justify-between mt-4">
-            <button
-              type="submit"
-              class="bg-green-600 text-white py-2 px-5 rounded-lg font-medium hover:bg-green-700 transition shadow-md"
-            >
-              Save
-            </button>
-            <button
-              type="button"
-              (click)="closeUpdateModal()"
-              class="bg-gray-400 text-white py-2 px-5 rounded-lg font-medium hover:bg-gray-500 transition shadow-md"
-            >
-              Cancel
-            </button>
-          </div>
-
-        </form>
-
-        <!-- Close button top-right -->
-        <button
-          (click)="closeUpdateModal()"
-          class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 font-bold text-lg"
-        >
-          &times;
-        </button>
-      </div>
-    </div>
+    <app-update-modal
+      [name]="mountain()?.name || ''"
+      [height]="mountain()?.height || 0"
+      [location]="mountain()?.location || ''"
+      [imageUrl]="mountain()?.image_url || ''"
+      [latitude]="mountain()?.latitude || 0"
+      [longitude]="mountain()?.longitude || 0"
+      (saveUpdate)="handleUpdate($event)"
+      (closeModal)="closeUpdateModal()"
+    />
   }
+
+  @if(showDeleteModal()) {
+    <app-delete-modal
+      [mountainName]="mountain()?.name || ''"
+      (confirmDelete)="confirmDelete()"
+      (closeModal)="closeDeleteModal()"
+    />
+  }
+
 </div>
 
 <style>

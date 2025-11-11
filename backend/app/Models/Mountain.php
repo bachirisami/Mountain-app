@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Mountain extends Model
 {
@@ -19,5 +19,15 @@ class Mountain extends Model
         'name',
         'height',
         'location',
+        'latitude',
+        'longitude',
+        'image_url',
     ];
+
+    public function scopeFilterName($query, $name)
+    {
+        if ($name) {
+            $query->whereRaw('LOWER(name) LIKE ?', ['%'.strtolower($name).'%']);
+        }
+    }
 }

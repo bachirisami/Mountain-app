@@ -1,28 +1,25 @@
-import { Component, OnInit, signal, effect } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { Mountain } from '../models/mountain.model';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MountainService } from '../mountain-service';
 import { AuthService } from '../auth-service';
-import { FormsModule } from '@angular/forms';
+import { Header } from '../header/header';
+import { DeleteModal } from '../delete-modal/delete-modal';
+import { UpdateModal } from '../update-modal/update-modal';
 
 @Component({
   selector: 'app-mountain-detail-page',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [Header, DeleteModal, UpdateModal],
   templateUrl: './mountain-detail-page.html',
   styleUrls: ['./mountain-detail-page.css'],
 })
 export class MountainDetailPage implements OnInit {
-  // Signals
   mountain = signal<Mountain | null>(null);
   isLoggedIn = signal(false);
   errorMessage = signal<string | null>(null);
-
   showUpdateModal = signal(false);
-
-  nameField = signal('');
-  heightField = signal(1);
-  locationField = signal('');
+  showDeleteModal = signal(false);
 
   private id!: number;
 
@@ -31,20 +28,9 @@ export class MountainDetailPage implements OnInit {
     private mountainService: MountainService,
     private authService: AuthService,
     private router: Router
-  ) {
-    // Effect to populate the update fields automatically when mountain is loaded
-    effect(() => {
-      const m = this.mountain();
-      if (m) {
-        this.nameField.set(m.name);
-        this.heightField.set(m.height);
-        this.locationField.set(m.location);
-      }
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
-    // Get mountain ID from route
     this.id = Number(this.route.snapshot.paramMap.get('id'));
     this.isLoggedIn.set(this.authService.isLoggedIn());
 
@@ -53,7 +39,6 @@ export class MountainDetailPage implements OnInit {
     }
   }
 
-  // Load a mountain by ID
   async loadMountain(id: number) {
     const data = await this.mountainService.getMountainById(id);
     if (!data) {
@@ -66,18 +51,22 @@ export class MountainDetailPage implements OnInit {
     this.mountain.set(data);
   }
 
-  // Delete a mountain
-  async deleteMountain(id: number) {
-    const confirmed = confirm(
-      `Are you sure you want to delete "${this.mountain()!.name}"?`
-    );
-    if (!confirmed) return;
-
-    await this.mountainService.deleteMountain(id);
-    await this.router.navigate(['/dashboard']);
+  openDeleteModal() {
+    this.showDeleteModal.set(true);
   }
 
-  // Toggle update modal
+  closeDeleteModal() {
+    this.showDeleteModal.set(false);
+  }
+
+  async confirmDelete() {
+    if (!this.mountain()) return;
+
+    await this.mountainService.deleteMountain(this.mountain()!.id);
+    this.closeDeleteModal();
+    await this.router.navigate(['/']);
+  }
+
   openUpdateModal() {
     this.showUpdateModal.set(true);
   }
@@ -86,20 +75,21 @@ export class MountainDetailPage implements OnInit {
     this.showUpdateModal.set(false);
   }
 
-  // Update mountain
-  async updateMountain() {
+  async handleUpdate(data: any) {
     if (!this.mountain()) return;
 
     const updated: Mountain = {
       id: this.mountain()!.id,
-      name: this.nameField(),
-      height: this.heightField(),
-      location: this.locationField(),
+      name: data.name,
+      height: data.height,
+      location: data.location,
+      image_url: data.imageUrl,
+      latitude: data.latitude,
+      longitude: data.longitude,
     };
 
     await this.mountainService.updateMountain(updated, updated.id);
     await this.loadMountain(updated.id);
     this.closeUpdateModal();
-    alert('Mountain updated successfully!');
   }
 }

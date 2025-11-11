@@ -1,30 +1,47 @@
-import {Injectable} from '@angular/core';
+import {Injectable, OnInit, signal} from '@angular/core';
 import {Mountain} from './models/mountain.model';
 import axios from 'axios';
 import {environment} from '../environments/environment.development';
+import {CreateMountain} from './models/createMountain.model';
+import {MountainResponse} from './models/mountainResponse.model';
+type MountainQueryResults = {
+  current_page: number;
+  last_page: number;
+}
 
 @Injectable({
   providedIn: 'root',
 })
-export class MountainService {
-  async getAllMountains(): Promise<Mountain[]> {
+export class MountainService implements OnInit{
+  mountains = signal<Mountain[]>([]);
+
+  async ngOnInit() {
+    await this.queryMountains();
+  }
+
+  private async getAllMountains(filters: MountainFilters = {}): Promise<MountainResponse> {
     try {
-      const response = await axios.get<Mountain[]>(environment.apiUrl + 'mountains', {
+      const response = await axios.get<MountainResponse>(environment.apiUrl + 'mountains', {
+        params: filters,
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
       });
 
-      return response.data.map((m) => ({
-        id: m.id,
-        name: m.name,
-        height: m.height,
-        location: m.location,
-      }));
+      this.mountains.set(response.data.data);
+      return response.data;
+    } catch (error) {
+      throw new Error('Error fetching mountains:' + error);
     }
-    catch (error) {
-      console.error('Error fetching mountains:', error);
-      return [];
+  }
+
+  async queryMountains(filters: MountainFilters = {}): Promise<MountainQueryResults>
+  {
+    const queryReponse = await this.getAllMountains(filters)
+
+    return {
+      current_page: queryReponse.current_page,
+      last_page: queryReponse.last_page,
     }
   }
 
@@ -43,6 +60,9 @@ export class MountainService {
         name: m.name,
         height: m.height,
         location: m.location,
+        image_url: m.image_url,
+        latitude: m.latitude,
+        longitude: m.longitude,
       };
     }
     catch (error) {
@@ -51,13 +71,16 @@ export class MountainService {
     }
   }
 
-  async createMountain(mountain: Mountain): Promise<Mountain | null>  {
+  async createMountain(mountain: CreateMountain): Promise<Mountain | null>  {
     try {
-      const response = await axios.post<Mountain>(environment.apiUrl + 'mountains',
+      const response = await axios.post<Mountain>(environment.apiUrl + 'mountains/create',
         {
           name: mountain.name,
           height: mountain.height,
           location: mountain.location,
+          latitude: mountain.latitude,
+          longitude: mountain.longitude,
+          image_url: mountain.image_url,
         },
         {
           headers: {
@@ -71,11 +94,16 @@ export class MountainService {
         name: response.data.name,
         height: response.data.height,
         location: response.data.location,
+        image_url: response.data.image_url,
+        latitude: response.data.latitude,
+        longitude: response.data.longitude
       };
     }
-    catch (error) {
-      console.error('Error fetching mountains:', error);
-      return null;
+    catch (error: any) {
+      if (error.response?.status === 422 && error.response?.data?.errors) {
+        throw error.response.data.errors;
+      }
+      throw new Error('Failed to create mountain');
     }
   }
 
@@ -101,6 +129,9 @@ export class MountainService {
           name: mountain.name,
           height: mountain.height,
           location: mountain.location,
+          latitude: mountain.latitude,
+          longitude: mountain.longitude,
+          image_url: mountain.image_url
         },
         {
           headers: {
@@ -114,6 +145,9 @@ export class MountainService {
         name: response.data.name,
         height: response.data.height,
         location: response.data.location,
+        image_url: response.data.image_url,
+        latitude: response.data.latitude,
+        longitude: response.data.longitude,
       };
     }
     catch (error) {

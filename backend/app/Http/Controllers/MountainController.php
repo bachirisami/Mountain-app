@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Mountain;
-use Illuminate\Validation\ValidationException;
-use App\Services\MountainService;
 use App\Http\Requests\CreateMountainRequest;
 use App\Http\Requests\UpdateMountainRequest;
+use App\Services\MountainService;
+use Illuminate\Http\Request;
 
 class MountainController extends Controller
 {
@@ -18,15 +16,20 @@ class MountainController extends Controller
         $this->mountainService = $mountainService;
     }
 
-    public function getAllMountains()
+    public function getAllMountains(Request $request)
     {
-        $mountains = $this->mountainService->getAll();
+        $filters = $request->only(['name', 'location', 'min_height', 'max_height']);
+        $perPage = $request->get('limit', default: 9);
+
+        $mountains = $this->mountainService->getAll($filters, $perPage);
+
         return response()->json($mountains);
     }
 
     public function getMountainById($id)
     {
         $mountain = $this->mountainService->getById($id);
+
         return response()->json($mountain);
     }
 
@@ -36,13 +39,13 @@ class MountainController extends Controller
 
         return response()->json([
             'message' => 'Mountain created successfully!',
-            'data' => $mountain
+            'data' => $mountain,
         ], 201);
     }
 
     public function deleteMountain($id)
     {
-        $deleted = $this->mountainService->delete($id);
+        $this->mountainService->delete($id);
 
         return response()->json(['message' => 'Mountain deleted successfully!'], 200);
     }
@@ -53,8 +56,7 @@ class MountainController extends Controller
 
         return response()->json([
             'message' => 'Mountain updated successfully!',
-            'data' => $mountain
+            'data' => $mountain,
         ]);
     }
 }
-// api_call?page=2&limit=10&query=Alpen

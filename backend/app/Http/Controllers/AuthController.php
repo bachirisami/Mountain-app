@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Services\AuthService;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
@@ -36,11 +34,7 @@ class AuthController extends Controller
     {
         $credentials = $request->validated();
 
-        try {
-            $user = $this->authService->login($credentials['email'], $credentials['password']);
-        } catch (UserNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 401);
-        }
+        $user = $this->authService->login($credentials['email'], $credentials['password']);
 
         $token = $user->createToken($user->name)->plainTextToken;
 
@@ -55,7 +49,7 @@ class AuthController extends Controller
         $this->authService->logout($request->user());
 
         return response()->json([
-            'message' => 'Logged out successfully'
+            'message' => 'Logged out successfully',
         ]);
     }
 }

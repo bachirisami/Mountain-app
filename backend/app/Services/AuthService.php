@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\User;
 use App\Exceptions\UserNotFoundException;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class AuthService
@@ -19,7 +19,7 @@ class AuthService
     {
         $user = User::where('email', $email)->first();
 
-        if (!$user || !Hash::check($password, $user->password)) {
+        if (! $user || ! Hash::check($password, $user->password)) {
             throw new UserNotFoundException('The provided credentials are incorrect.');
         }
 

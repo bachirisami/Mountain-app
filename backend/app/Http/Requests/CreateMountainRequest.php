@@ -25,6 +25,9 @@ class CreateMountainRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'height' => ['required', 'integer', 'min:1'],
             'location' => ['required', 'string', 'max:255'],
+            'latitude' => ['required', 'numeric'],
+            'longitude' => ['required', 'numeric'],
+            'image_url' => ['required', 'string', 'max:255'],
         ];
     }
 }

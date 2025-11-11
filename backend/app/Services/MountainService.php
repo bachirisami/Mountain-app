@@ -2,24 +2,25 @@
 
 namespace App\Services;
 
+use App\Exceptions\MountainNotFoundException;
 use App\Models\Mountain;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Http\Request;
-use \App\Exceptions\MountainNotFoundException;
 
 class MountainService
 {
-    public function getAll()
+    public function getAll(array $filters = [], int $perPage = 2)
     {
-        return Mountain::all();
+        return Mountain::query()
+            ->filterName($filters['name'] ?? null)
+            ->paginate($perPage);
     }
 
     public function getById(int $id): ?Mountain
     {
         $mountain = Mountain::find($id);
-        if (!$mountain) {
-            throw new MountainNotFoundException("Mountain not found");
+        if (! $mountain) {
+            throw new MountainNotFoundException('Mountain not found');
         }
+
         return $mountain;
     }
 
@@ -32,7 +33,7 @@ class MountainService
     {
         $mountain = Mountain::find($id);
 
-        if (!$mountain) {
+        if (! $mountain) {
             throw new MountainNotFoundException('Mountain not found');
         }
 
@@ -41,15 +42,14 @@ class MountainService
         return $mountain;
     }
 
-    public function delete(int $id): bool
+    public function delete(int $id)
     {
         $mountain = Mountain::find($id);
 
-        if (!$mountain) {
-            throw new MountainNotFoundException("Mountain not found");
+        if (! $mountain) {
+            throw new MountainNotFoundException('Mountain not found');
         }
 
         $mountain->delete();
-        return true;
     }
 }
