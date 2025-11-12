@@ -6,11 +6,12 @@ import { AuthService } from '../auth-service';
 import { Header } from '../header/header';
 import { DeleteModal } from '../delete-modal/delete-modal';
 import { UpdateModal } from '../update-modal/update-modal';
+import { NgOptimizedImage } from '@angular/common'
 
 @Component({
   selector: 'app-mountain-detail-page',
   standalone: true,
-  imports: [Header, DeleteModal, UpdateModal],
+  imports: [Header, DeleteModal, UpdateModal, NgOptimizedImage],
   templateUrl: './mountain-detail-page.html',
   styleUrls: ['./mountain-detail-page.css'],
 })

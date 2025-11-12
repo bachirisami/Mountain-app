@@ -19,9 +19,10 @@ export class AuthService {
 
     try {
       await axios.post(
-        environment.apiUrl + '/logout',
+        environment.apiUrl + 'logout',
+        {},
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` }
         }
       );
     } catch (error) {
@@ -34,7 +35,7 @@ export class AuthService {
   async register(request: RegisterRequest) {
     try {
       return await axios.post(
-        environment.apiUrl + '/register',
+        environment.apiUrl + 'register',
         request,
         {
           headers: {'Content-Type': 'application/json'},

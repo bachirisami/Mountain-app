@@ -4,7 +4,6 @@ import AuthService from '../auth-service';
 import { MountainService } from '../mountain-service';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import {NgOptimizedImage} from '@angular/common';
 import {Header} from '../header/header';
 import {debounceTime, of} from 'rxjs';
 import {toObservable, toSignal} from '@angular/core/rxjs-interop';

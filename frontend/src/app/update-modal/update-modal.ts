@@ -31,8 +31,36 @@ export class UpdateModal {
   imageUrlField = signal('');
   latitudeField = signal(0);
   longitudeField = signal(0);
+  message = signal('');
 
   onSubmit() {
+    this.message.set('');
+
+    // Frontend validation
+    const errors: string[] = [];
+
+    if (this.nameField() && this.nameField().trim() === '') {
+      errors.push('name');
+    }
+    if (this.heightField() !== null && this.heightField() < 1) {
+      errors.push('height');
+    }
+    if (this.locationField() && this.locationField().trim() === '') {
+      errors.push('location');
+    }
+    if (this.imageUrlField() && this.imageUrlField().trim() === '') {
+      errors.push('image url');
+    }
+
+    if (errors.length > 0) {
+      if (errors.length === 1) {
+        this.message.set(`The ${errors[0]} field must be valid`);
+      } else {
+        this.message.set(`The following fields must be valid: ${errors.join(', ')}`);
+      }
+      return;
+    }
+
     this.saveUpdate.emit({
       name: this.nameField(),
       height: this.heightField(),

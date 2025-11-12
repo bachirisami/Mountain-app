@@ -1,7 +1,7 @@
 import {Component, signal} from '@angular/core';
 import {MountainService} from '../mountain-service';
 import {FormsModule} from '@angular/forms';
-import {RouterLink} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import {Header} from '../header/header';
 import {NgClass} from '@angular/common';
 
@@ -24,10 +24,14 @@ export class CreateMountainPage {
   longitude = signal<number | null>(null);
   imageUrl = signal('');
   message = signal('');
+  fieldErrors = signal<Record<string, string[]>>({});
 
-  constructor(private mountainService: MountainService) {}
+  constructor(private mountainService: MountainService, private router: Router) {}
 
   async createMountain() {
+    this.message.set('');
+    this.fieldErrors.set({});
+
     const newMountain = {
       name: this.name(),
       height: this.height()!,
@@ -36,6 +40,39 @@ export class CreateMountainPage {
       longitude: this.longitude()!,
       image_url: this.imageUrl(),
     };
+
+    // Frontend validation
+    const errors: string[] = [];
+
+    if (!newMountain.name || newMountain.name.trim() === '') {
+      errors.push('name');
+    }
+    if (!newMountain.height || newMountain.height < 1) {
+      errors.push('height');
+    }
+    if (!newMountain.location || newMountain.location.trim() === '') {
+      errors.push('location');
+    }
+    if (newMountain.latitude === null || newMountain.latitude === undefined) {
+      errors.push('latitude');
+    }
+    if (newMountain.longitude === null || newMountain.longitude === undefined) {
+      errors.push('longitude');
+    }
+    if (!newMountain.image_url || newMountain.image_url.trim() === '') {
+      errors.push('image url');
+    }
+
+    if (errors.length > 0) {
+      if (errors.length === 6) {
+        this.message.set('All fields need to be filled in');
+      } else if (errors.length === 1) {
+        this.message.set(`The ${errors[0]} field is required`);
+      } else {
+        this.message.set(`The following fields are required: ${errors.join(', ')}`);
+      }
+      return;
+    }
 
     try {
       const result = await this.mountainService.createMountain(newMountain);
@@ -49,12 +86,21 @@ export class CreateMountainPage {
         this.longitude.set(null);
         this.imageUrl.set('');
       }
-    } catch (errors: any) {
-      if (typeof errors === 'object') {
-        const errorMessages = Object.values(errors).flat().join(', ');
-        this.message.set(errorMessages);
+      this.router.navigate(['/mountains']);
+    } catch (error: any) {
+      if (error?.status === 422 && error?.error?.errors) {
+        const backendErrors = error.error.errors;
+        const errorFields = Object.keys(backendErrors).map(field => field.replace('_', ' '));
+
+        if (errorFields.length === 6) {
+          this.message.set('All fields need to be filled in');
+        } else if (errorFields.length === 1) {
+          this.message.set(`The ${errorFields[0]} field is required`);
+        } else {
+          this.message.set(`The following fields are required: ${errorFields.join(', ')}`);
+        }
       } else {
-        this.message.set('Failed to create mountain.');
+        this.message.set(error?.error?.message || 'An error occurred');
       }
     }
   }

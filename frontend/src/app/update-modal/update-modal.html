@@ -3,6 +3,12 @@
 
     <h3 class="text-2xl font-semibold mb-5 text-gray-800">Update Mountain</h3>
 
+    @if (message()) {
+      <div class="mb-4 p-3 bg-red-100 text-red-700 rounded-lg">
+        {{ message() }}
+      </div>
+    }
+
     <form (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
 
       <input

@@ -33,7 +33,6 @@
           @if (authService.isLoggedIn()){
             <a
               (click)="logout()"
-              routerLink="/"
               class="rounded-md bg-gray-700 px-3 py-2 text-sm font-medium text-white hover:bg-gray-600 transition"
             >Logout</a>
           } @else {
@@ -45,7 +44,6 @@
         </div>
       </div>
 
-      <!-- Mobile menu button -->
       <div class="md:hidden">
         <button
           (click)="toggleMobileMenu()"
@@ -66,7 +64,6 @@
     </div>
   </div>
 
-  <!-- Mobile menu -->
   @if (mobileMenuOpen()) {
     <div class="md:hidden">
       <div class="space-y-1 px-2 pb-3 pt-2 sm:px-3">
@@ -91,7 +88,6 @@
           @if (authService.isLoggedIn()){
             <a
               (click)="logout(); closeMobileMenu()"
-              routerLink="/"
               class="block rounded-md bg-gray-700 px-3 py-2 text-base font-medium text-white hover:bg-gray-600 transition"
             >Logout</a>
           } @else {
