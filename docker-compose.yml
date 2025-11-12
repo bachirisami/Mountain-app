@@ -25,6 +25,7 @@ services:
       - mysql
     volumes:
       - ./backend:/var/www/html
+      - /var/www/html/vendor
     environment:
       DB_HOST: mysql
       DB_PORT: 3306
