@@ -12,7 +12,7 @@ COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 COPY . .
 
 # Install Laravel dependencies
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --dev --optimize-autoloader
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
