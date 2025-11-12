@@ -7,7 +7,7 @@ use App\Models\Mountain;
 
 class MountainService
 {
-    public function getAll(array $filters = [], int $perPage = 2)
+    public function getAll(array $filters = [], int $perPage = 9)
     {
         return Mountain::query()
             ->filterName($filters['name'] ?? null)
