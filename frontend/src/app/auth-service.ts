@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {environment} from '../environments/environment.development';
+import { environment } from '../environments/environment';
 import axios from 'axios';
 import {RegisterRequest} from './models/registerRequest.model';
 

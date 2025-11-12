@@ -1,10 +1,7 @@
 import {Component, inject, signal} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import AuthService from '../auth-service';
-import axios from 'axios';
-import { environment } from '../../environments/environment.development';
 import { FormsModule } from '@angular/forms';
-import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-login-page',

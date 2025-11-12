@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mountain_app
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  backend:
+    build: ./backend
+    container_name: laravel_app
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    ports:
+      - "9000:9000"
+    depends_on:
+      - mysql
+    volumes:
+      - ./backend:/var/www/html
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: mountain_app
+      DB_USERNAME: root
+      DB_PASSWORD: root
+
+  frontend:
+    build: ./frontend
+    container_name: angular_app
+    restart: unless-stopped
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:

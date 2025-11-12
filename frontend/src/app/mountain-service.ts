@@ -1,7 +1,7 @@
 import {Injectable, OnInit, signal} from '@angular/core';
 import {Mountain} from './models/mountain.model';
 import axios from 'axios';
-import {environment} from '../environments/environment.development';
+import { environment } from '../environments/environment';
 import {CreateMountain} from './models/createMountain.model';
 import {MountainResponse} from './models/mountainResponse.model';
 type MountainQueryResults = {
