@@ -1,4 +1,4 @@
-import {Component, signal} from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
 import {Router, RouterLink} from '@angular/router';
 import AuthService from '../auth-service';
 import {FormsModule} from '@angular/forms';
@@ -19,8 +19,10 @@ export class RegistrationPage {
   passwordConfirmation = signal('');
   errorMessage = signal('');
   fieldErrors = signal<Record<string, string[]>>({});
+  private router = inject(Router);
+  private authService = inject(AuthService);
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor() {}
 
   async onRegister() {
     this.errorMessage.set('');

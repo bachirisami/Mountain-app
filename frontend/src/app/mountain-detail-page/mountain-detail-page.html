@@ -12,11 +12,12 @@
       <div class="flex flex-col lg:flex-row gap-6">
 
         <div class="flex-1 flex flex-col items-center lg:items-start gap-6">
-          <div class="w-full h-96 rounded-xl overflow-hidden shadow-inner">
+          <div class="w-full h-64 md:h-80 lg:h-96 rounded-xl overflow-hidden shadow-inner relative">
             <img
-              [ngSrc]="mountain()?.image_url || 'https://via.placeholder.com/400x400?text=No+Image'"
+              [ngSrc]="mountain()?.image_url || 'https://via.placeholder.com/400x400'"
               alt="{{ mountain()?.name }}"
-              class="w-full h-full object-cover rounded-xl"
+              fill
+              class="object-cover rounded-xl"
             />
           </div>
 
@@ -27,18 +28,18 @@
             <strong>Location:</strong> {{ mountain()?.location }}
           </p>
 
-          @if(isLoggedIn()) {
+          @if(authService.isLoggedIn()) {
             <div class="flex gap-4 mt-4">
               <button
                 (click)="openDeleteModal()"
-                class="bg-red-600 text-white px-5 py-3 rounded-lg font-medium hover:bg-red-700 transition shadow-sm"
+                class="bg-red-600 text-white px-5 py-3 rounded-lg font-medium hover:bg-red-700 transition shadow-sm cursor-pointer"
               >
                 Delete
               </button>
 
               <button
                 (click)="openUpdateModal()"
-                class="bg-yellow-500 text-white px-5 py-3 rounded-lg font-medium hover:bg-yellow-600 transition shadow-sm"
+                class="bg-yellow-500 text-white px-5 py-3 rounded-lg font-medium hover:bg-yellow-600 transition shadow-sm cursor-pointer"
               >
                 Update
               </button>
@@ -48,9 +49,7 @@
 
         <div class="flex-1 h-96 rounded-xl overflow-hidden shadow-inner">
           <img
-            [src]="mountain()
-              ? 'https://static-maps.yandex.ru/1.x/?ll=' + mountain()?.longitude + ',' + mountain()?.latitude + '&size=650,400&z=8&l=map&pt=' + mountain()?.longitude + ',' + mountain()?.latitude + ',pm2rdm'
-              : 'https://via.placeholder.com/650x400?text=No+Map' "
+            [src]="mapUrl()"
             alt="Map of {{ mountain()?.name }}"
             class="w-full h-full object-cover rounded-xl"
           />
@@ -69,7 +68,8 @@
       [imageUrl]="mountain()?.image_url || ''"
       [latitude]="mountain()?.latitude || 0"
       [longitude]="mountain()?.longitude || 0"
-      (saveUpdate)="handleUpdate($event)"
+      [mountainId]="mountain()?.id || 0"
+      (updateSuccess)="handleUpdate()"
       (closeModal)="closeUpdateModal()"
     />
   }

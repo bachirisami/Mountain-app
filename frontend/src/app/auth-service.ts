@@ -7,7 +7,6 @@ import {RegisterRequest} from './models/registerRequest.model';
   providedIn: 'root',
 })
 export class AuthService {
-
   isLoggedIn(): boolean {
     const token = localStorage.getItem('token');
     return !!token;
@@ -22,7 +21,7 @@ export class AuthService {
         environment.apiUrl + 'logout',
         {},
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}`,  'Content-Type': 'application/json'}
         }
       );
     } catch (error) {
@@ -43,6 +42,25 @@ export class AuthService {
       );
     } catch (error: any) {
       console.error('Registration error:', error.response?.data || error.message);
+      throw error;
+    }
+  }
+
+  async login(email: string, password: string): Promise<string> {
+    try {
+      const response = await axios.post(
+        environment.apiUrl + 'login',
+        { email, password },
+        {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+
+      const token = response.data.token;
+      localStorage.setItem('token', token);
+      return token;
+    } catch (error: any) {
+      console.error('Login error:', error.response?.data || error.message);
       throw error;
     }
   }

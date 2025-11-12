@@ -48,7 +48,8 @@ describe('Dashboard', () => {
   it('should load mountains on initialization', async () => {
     mountainService.queryMountains.and.resolveTo({ last_page: 3, current_page: 1 });
 
-    await component.loadMountains();
+    fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(mountainService.queryMountains).toHaveBeenCalledWith({
       name: '',

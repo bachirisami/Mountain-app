@@ -1,6 +1,7 @@
-import {Component, signal} from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
 import {Router, RouterLink, RouterLinkActive} from '@angular/router';
 import AuthService from '../auth-service';
+import {MountainService} from '../mountain-service';
 
 @Component({
   selector: 'app-header',
@@ -13,11 +14,14 @@ import AuthService from '../auth-service';
 })
 export class Header {
   mobileMenuOpen = signal(false);
-  constructor(protected authService: AuthService, private router: Router) {
-  }
+  private router = inject(Router);
+  protected authService = inject(AuthService);
 
   async logout() {
     await this.authService.logout();
+    if (this.router.url === '/create-mountain') {
+      this.router.navigate(['/']);
+    }
   }
 
   toggleMobileMenu() {

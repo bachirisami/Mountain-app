@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
 import { Mountain } from '../models/mountain.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MountainService } from '../mountain-service';
@@ -17,23 +17,26 @@ import { NgOptimizedImage } from '@angular/common'
 })
 export class MountainDetailPage implements OnInit {
   mountain = signal<Mountain | null>(null);
-  isLoggedIn = signal(false);
   errorMessage = signal<string | null>(null);
   showUpdateModal = signal(false);
   showDeleteModal = signal(false);
+  private route = inject(ActivatedRoute);
+  private mountainService = inject(MountainService);
+  protected authService = inject(AuthService);
+  private router = inject(Router);
+
+  mapUrl = computed(() => {
+    const m = this.mountain();
+    if (!m?.longitude || !m?.latitude) {
+      return 'https://via.placeholder.com/650x400?text=No+Map';
+    }
+    return `https://static-maps.yandex.ru/1.x/?ll=${m.longitude},${m.latitude}&size=650,400&z=8&l=map&pt=${m.longitude},${m.latitude},pm2rdm`;
+  });
 
   private id!: number;
 
-  constructor(
-    private route: ActivatedRoute,
-    private mountainService: MountainService,
-    private authService: AuthService,
-    private router: Router
-  ) {}
-
   ngOnInit(): void {
     this.id = Number(this.route.snapshot.paramMap.get('id'));
-    this.isLoggedIn.set(this.authService.isLoggedIn());
 
     if (this.id) {
       this.loadMountain(this.id);
@@ -45,7 +48,7 @@ export class MountainDetailPage implements OnInit {
     if (!data) {
       this.errorMessage.set('Mountain not found.');
       setTimeout(() => {
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/']);
       }, 2000);
       return;
     }
@@ -76,21 +79,8 @@ export class MountainDetailPage implements OnInit {
     this.showUpdateModal.set(false);
   }
 
-  async handleUpdate(data: any) {
-    if (!this.mountain()) return;
-
-    const updated: Mountain = {
-      id: this.mountain()!.id,
-      name: data.name,
-      height: data.height,
-      location: data.location,
-      image_url: data.imageUrl,
-      latitude: data.latitude,
-      longitude: data.longitude,
-    };
-
-    await this.mountainService.updateMountain(updated, updated.id);
-    await this.loadMountain(updated.id);
+  async handleUpdate() {
+    await this.loadMountain(this.id);
     this.closeUpdateModal();
   }
 }

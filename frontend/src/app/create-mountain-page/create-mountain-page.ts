@@ -1,9 +1,10 @@
-import {Component, signal} from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
 import {MountainService} from '../mountain-service';
 import {FormsModule} from '@angular/forms';
 import {Router, RouterLink} from '@angular/router';
 import {Header} from '../header/header';
 import {NgClass} from '@angular/common';
+import {CreateMountain} from '../models/createMountain.model';
 
 @Component({
   selector: 'app-create-mountain-page',
@@ -25,14 +26,14 @@ export class CreateMountainPage {
   imageUrl = signal('');
   message = signal('');
   fieldErrors = signal<Record<string, string[]>>({});
-
-  constructor(private mountainService: MountainService, private router: Router) {}
+  private mountainService = inject(MountainService);
+  private router = inject(Router);
 
   async createMountain() {
     this.message.set('');
     this.fieldErrors.set({});
 
-    const newMountain = {
+    const newMountain: CreateMountain = {
       name: this.name(),
       height: this.height()!,
       location: this.location(),
@@ -41,67 +42,57 @@ export class CreateMountainPage {
       image_url: this.imageUrl(),
     };
 
-    // Frontend validation
-    const errors: string[] = [];
+    const validations = [
+      { field: 'name', valid: newMountain.name?.trim() },
+      { field: 'height', valid: newMountain.height && newMountain.height > 0 },
+      { field: 'location', valid: newMountain.location?.trim() },
+      { field: 'latitude', valid: newMountain.latitude !== null && newMountain.latitude !== undefined },
+      { field: 'longitude', valid: newMountain.longitude !== null && newMountain.longitude !== undefined },
+      { field: 'image url', valid: newMountain.image_url?.trim() },
+    ];
 
-    if (!newMountain.name || newMountain.name.trim() === '') {
-      errors.push('name');
-    }
-    if (!newMountain.height || newMountain.height < 1) {
-      errors.push('height');
-    }
-    if (!newMountain.location || newMountain.location.trim() === '') {
-      errors.push('location');
-    }
-    if (newMountain.latitude === null || newMountain.latitude === undefined) {
-      errors.push('latitude');
-    }
-    if (newMountain.longitude === null || newMountain.longitude === undefined) {
-      errors.push('longitude');
-    }
-    if (!newMountain.image_url || newMountain.image_url.trim() === '') {
-      errors.push('image url');
-    }
+    const errors = validations.filter(v => !v.valid).map(v => v.field);
 
     if (errors.length > 0) {
-      if (errors.length === 6) {
-        this.message.set('All fields need to be filled in');
-      } else if (errors.length === 1) {
-        this.message.set(`The ${errors[0]} field is required`);
-      } else {
-        this.message.set(`The following fields are required: ${errors.join(', ')}`);
-      }
+      const msg = errors.length === 6
+        ? 'All fields need to be filled in'
+        : errors.length === 1
+          ? `The ${errors[0]} field is required`
+          : `The following fields are required: ${errors.join(', ')}`;
+      this.message.set(msg);
       return;
     }
 
     try {
-      const result = await this.mountainService.createMountain(newMountain);
-
-      if (result) {
-        this.message.set('Mountain created successfully!');
-        this.name.set('');
-        this.height.set(null);
-        this.location.set('');
-        this.latitude.set(null);
-        this.longitude.set(null);
-        this.imageUrl.set('');
-      }
-      this.router.navigate(['/mountains']);
+      await this.mountainService.createMountain(newMountain);
+      this.message.set('Mountain created successfully!');
+      this.resetForm();
+      await this.router.navigate(['/mountains']);
     } catch (error: any) {
-      if (error?.status === 422 && error?.error?.errors) {
-        const backendErrors = error.error.errors;
-        const errorFields = Object.keys(backendErrors).map(field => field.replace('_', ' '));
+      this.handleError(error);
+    }
+  }
 
-        if (errorFields.length === 6) {
-          this.message.set('All fields need to be filled in');
-        } else if (errorFields.length === 1) {
-          this.message.set(`The ${errorFields[0]} field is required`);
-        } else {
-          this.message.set(`The following fields are required: ${errorFields.join(', ')}`);
-        }
-      } else {
-        this.message.set(error?.error?.message || 'An error occurred');
-      }
+  private resetForm() {
+    this.name.set('');
+    this.height.set(null);
+    this.location.set('');
+    this.latitude.set(null);
+    this.longitude.set(null);
+    this.imageUrl.set('');
+  }
+
+  private handleError(error: any) {
+    if (error?.status === 422 && error?.error?.errors) {
+      const errorFields = Object.keys(error.error.errors).map(field => field.replace('_', ' '));
+      const msg = errorFields.length === 6
+        ? 'All fields need to be filled in'
+        : errorFields.length === 1
+          ? `The ${errorFields[0]} field is required`
+          : `The following fields are required: ${errorFields.join(', ')}`;
+      this.message.set(msg);
+    } else {
+      this.message.set(error?.error?.message || 'An error occurred');
     }
   }
 }

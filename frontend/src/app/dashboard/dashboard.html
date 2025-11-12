@@ -50,7 +50,7 @@
         <button
           (click)="prevPage()"
           [disabled]="currentPage() === 1"
-          class="px-4 py-2 bg-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-400 transition"
+          class="px-4 py-2 bg-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-400 transition cursor-pointer"
         >
           Previous
         </button>
@@ -60,7 +60,7 @@
         <button
           (click)="nextPage()"
           [disabled]="currentPage() === totalPages()"
-          class="px-4 py-2 bg-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-400 transition"
+          class="px-4 py-2 bg-gray-300 rounded-lg disabled:opacity-50 hover:bg-gray-400 transition cursor-pointer"
         >
           Next
         </button>

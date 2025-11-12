@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import AuthService from '../auth-service';
 import axios from 'axios';
@@ -20,8 +20,8 @@ export class LoginPage {
   email: string = '';
   password: string = '';
   errorMessage = signal<string>('');
-
-  constructor(private router: Router, private authService: AuthService) {}
+  private router = inject(Router);
+  private authService = inject(AuthService);
 
   async onLogin() {
     this.errorMessage.set('');
@@ -32,12 +32,7 @@ export class LoginPage {
     }
 
     try {
-      const response = await axios.post(environment.apiUrl + 'login', {
-        email: this.email,
-        password: this.password
-      });
-
-      localStorage.setItem('token', response.data.token);
+      await this.authService.login(this.email, this.password);
 
       const returnUrl = localStorage.getItem('returnUrl') || '/';
       localStorage.removeItem('returnUrl');
