@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
-Route::get('/mountains', [MountainController::class, 'getAllMountains']);
+Route::get('/mountains', [MountainController::class, 'getAllMountains'])->middleware('auth:sanctum');
 Route::get('/mountains/{id}', [MountainController::class, 'getMountainById'])->middleware('auth:sanctum');
 Route::post('/mountains/create', [MountainController::class, 'createMountain'])->middleware('auth:sanctum');
 Route::delete('/mountains/{id}', [MountainController::class, 'deleteMountain'])->middleware('auth:sanctum');
