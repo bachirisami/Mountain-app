@@ -28,23 +28,21 @@
             <strong>Location:</strong> {{ mountain()?.location }}
           </p>
 
-          @if(authService.isLoggedIn()) {
-            <div class="flex gap-4 mt-4">
-              <button
-                (click)="openDeleteModal()"
-                class="bg-red-600 text-white px-5 py-3 rounded-lg font-medium hover:bg-red-700 transition shadow-sm cursor-pointer"
-              >
-                Delete
-              </button>
+          <div class="flex gap-4 mt-4">
+            <button
+              (click)="openDeleteModal()"
+              class="bg-red-600 text-white px-5 py-3 rounded-lg font-medium hover:bg-red-700 transition shadow-sm cursor-pointer"
+            >
+              Delete
+            </button>
 
-              <button
-                (click)="openUpdateModal()"
-                class="bg-yellow-500 text-white px-5 py-3 rounded-lg font-medium hover:bg-yellow-600 transition shadow-sm cursor-pointer"
-              >
-                Update
-              </button>
-            </div>
-          }
+            <button
+              (click)="openUpdateModal()"
+              class="bg-yellow-500 text-white px-5 py-3 rounded-lg font-medium hover:bg-yellow-600 transition shadow-sm cursor-pointer"
+            >
+              Update
+            </button>
+          </div>
         </div>
 
         <div class="flex-1 h-96 rounded-xl overflow-hidden shadow-inner">

@@ -9,13 +9,17 @@ WORKDIR /var/www/html
 
 # Install Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+
+# Copy app files
 COPY . .
 
 # Install Laravel dependencies
 RUN composer install --dev --optimize-autoloader
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Copy entrypoint
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 9000
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=9000"]
+
+ENTRYPOINT ["docker-entrypoint.sh"]

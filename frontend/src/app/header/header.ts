@@ -19,9 +19,7 @@ export class Header {
 
   async logout() {
     await this.authService.logout();
-    if (this.router.url === '/create-mountain') {
-      this.router.navigate(['/']);
-    }
+    this.router.navigate(['/login']);
   }
 
   toggleMobileMenu() {
@@ -30,10 +28,5 @@ export class Header {
 
   closeMobileMenu() {
     this.mobileMenuOpen.set(false);
-  }
-
-  navigateToLogin() {
-    localStorage.setItem('returnUrl', this.router.url);
-    this.router.navigate(['/login']);
   }
 }

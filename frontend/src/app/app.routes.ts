@@ -14,19 +14,25 @@ export const routes: Routes =
     },
     {
       path: 'register',
-      component: RegistrationPage
+      component: RegistrationPage,
     },
     {
       path: '',
-      component: Dashboard
+      component: Dashboard,
+      canActivate: [AuthGuard]
     },
     {
       path: 'mountain/:id',
-      component: MountainDetailPage
+      component: MountainDetailPage,
+      canActivate: [AuthGuard]
     },
     {
       path: 'create-mountain',
       component: CreateMountainPage,
       canActivate: [AuthGuard]
+    },
+    {
+      path: '**',
+      redirectTo: ''
     }
   ];
