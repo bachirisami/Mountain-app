@@ -101,19 +101,6 @@ Once the containers are running, you can access:
 - **Frontend**: [http://localhost:4200](http://localhost:4200)
 - **Backend API**: [http://localhost:9000](http://localhost:9000)
 
----
-
-## 💾 Database Seeding
-
-To reset the database and populate it with sample mountain data:
-
-```bash
-docker-compose exec backend php artisan migrate:fresh --seed
-```
-
-> ⚠️ **Warning**: This command will drop all existing tables and data before recreating them.
-
----
 
 ## 🛠️ Tech Stack
 
